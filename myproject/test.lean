@@ -1,8 +1,8 @@
 import Mathlib
 open Ideal
 variable {k : Type*} [Field k] (p q : Polynomial k)
-/-- If  `k` is any field, we say that two polynomails in `k[x]` are relatively prime if they generate the
-  unit ideal in `k[x]` -/
+/-- If  `k` is any field, we say that two polynomails in `k[x]` are relatively prime
+  if they generate the unit ideal in `k[x]` -/
 def poly_is_relprime : Prop :=
   IsUnit (Ideal.span {p, q})
 

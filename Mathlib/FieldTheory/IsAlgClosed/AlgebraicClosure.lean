@@ -413,4 +413,25 @@ instance [CharZero k] : CharZero (AlgebraicClosure k) :=
 instance {p : ℕ} [CharP k p] : CharP (AlgebraicClosure k) p :=
   charP_of_injective_algebraMap (RingHom.injective (algebraMap k (AlgebraicClosure k))) p
 
+/-09GY Lemma: Two polynomials in $k[x]$ are relatively prime
+precisely when they have no common roots in an algebraic closure $\overline{k}$ of $k$.
+[Stacks: Lemma 09GY](https://stacks.math.columbia.edu/tag/09GY) -/
+lemma IsComrime_iff_no_common_root {k : Type*} [Field k] {p q : Polynomial k} :
+IsCoprime p q ↔ (¬ ∃ r : AlgebraicClosure k, IsRoot (map (algebraMap k (AlgebraicClosure k)) p) r ∧
+IsRoot (map (algebraMap k (AlgebraicClosure k)) q) r) := by
+  letI := Classical.typeDecidableEq (AlgebraicClosure k)
+  rw [← isCoprime_map (algebraMap k (AlgebraicClosure k)),
+  ← EuclideanDomain.gcd_isUnit_iff, isUnit_iff_degree_eq_zero, iff_not_comm]
+  constructor
+  · intro ⟨r, hr⟩
+    by_contra h
+    rw [← isUnit_iff_degree_eq_zero, isUnit_iff] at h
+    rcases h with ⟨c, unc, polc⟩
+    rw [← isRoot_gcd_iff_isRoot_left_right, ← polc, IsRoot.def, eval_C] at hr
+    rw [hr, isUnit_iff_ne_zero] at unc
+    exact unc rfl
+  · intro h
+    rcases IsAlgClosed.exists_root _ h with ⟨r, hr⟩
+    exact ⟨r, isRoot_gcd_iff_isRoot_left_right.mp hr⟩
+
 end AlgebraicClosure

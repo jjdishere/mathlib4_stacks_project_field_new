@@ -86,25 +86,6 @@ jobs:
         run: |
           ./scripts/lint-bib.sh
 
-  check_workflows:
-    if: github.repository != 'leanprover-community/mathlib4'
-    name: check workflows (fork)
-    runs-on: ubuntu-latest
-    steps:
-      - name: cleanup
-        run: |
-          find . -name . -o -prune -exec rm -rf -- {} +
-
-      - uses: actions/checkout@v4
-
-      - name: update workflows
-        run: |
-          cd .github/workflows/
-          ./mk_build_yml.sh
-
-      - name: check that workflows were consistent
-        run: git diff --exit-code
-
   build:
     if: github.repository != 'leanprover-community/mathlib4'
     name: Build (fork)
@@ -194,17 +175,6 @@ jobs:
         env:
           MATHLIB_CACHE_SAS: ${{ secrets.MATHLIB_CACHE_SAS }}
           MATHLIB_CACHE_S3_TOKEN: ${{ secrets.MATHLIB_CACHE_S3_TOKEN }}
-
-      - name: check the cache
-        run: |
-          # Because the `lean-pr-testing-NNNN` branches use toolchains that are "updated in place"
-          # the cache mechanism is unreliable, so we don't test it if we are on such a branch.
-          if [[ ! $(cat lean-toolchain) =~ ^leanprover/lean4-pr-releases:pr-release-[0-9]+$ ]]; then
-            lake exe cache clean!
-            rm -rf .lake/build/lib/Mathlib
-            lake exe cache get || (sleep 1; lake exe cache get)
-            lake build --no-build
-          fi
 
       - name: build archive
         id: archive

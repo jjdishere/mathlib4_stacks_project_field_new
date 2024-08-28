@@ -1,9 +1,13 @@
-import Mathlib
+import Mathlib.Algebra.Polynomial.Basic
+import Mathlib.Algebra.Group.Units
+import Mathlib.RingTheory.Coprime.Basic
+import Mathlib.RingTheory.Ideal.Basic
+import Mathlib.RingTheory.Ideal.Operations
 open Ideal
 variable {k : Type*} [Field k] (p q : Polynomial k)
 -- Here is the definition 11.1 (09 GX)
 
-/-- If  `k` is any field, we say that two polynomails in `k[x]` are relatively prime
+/-- If `k` is any field, we say that two polynomails in `k[x]` are relatively prime
   if they generate the unit ideal in `k[x]` -/
 def poly_is_relprime : Prop :=
   IsUnit (Ideal.span {p, q})

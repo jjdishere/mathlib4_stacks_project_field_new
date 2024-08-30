@@ -223,8 +223,7 @@ instance : Valued (RatFunc K) ℤₘ₀ := Valued.mk' (idealX K).valuation
 theorem WithZero.valued_def {x : RatFunc K} :
     @Valued.v (RatFunc K) _ _ _ _ x = (idealX K).valuation x := rfl
 
-/- (Degree of a rational function field).
-If $k$ is any field, then the rational function field $k(t)$ is not a finite extension.
+/-- If $k$ is any field, then the rational function field $k(t)$ is not a finite extension.
 For example the elements $\left\{t^n, n \in \mathbf{Z}\right\}$ are linearly independent over k.
 
 [Stacks: Lemma 09G6, first part](https://stacks.math.columbia.edu/tag/09G6) -/

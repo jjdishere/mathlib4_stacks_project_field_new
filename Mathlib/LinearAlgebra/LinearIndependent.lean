@@ -1143,6 +1143,84 @@ lemma linearIndependent_algHom_toLinearMap' (K M L) [CommRing K]
   simp_rw [Algebra.smul_def, mul_one]
   exact NoZeroSMulDivisors.algebraMap_injective K L
 
+/-- Let $L$ be a field. Let $n \geq 1$ and $\alpha_1, \ldots, \alpha_n \in L$
+pairwise distinct elements of $L$. Then there exists an
+$e \geq 0$ such that $\sum_{i = 1, \ldots, n} \alpha_i^e \not = 0$.
+
+[Stacks: Lemma 0EM9](https://stacks.math.columbia.edu/tag/0EM9) -/
+theorem sum_of_pow_ne_zero_of_ne {n : ℕ} {L : Type u} [Field L] {α : Fin n → L} (hn₀ : n > 0)
+    (hne : ∀ i j : Fin n, i ≠ j → α i ≠ α j) : ∃ (e : ℕ), ∑ i, (α i) ^ e ≠ 0 := by
+  have h := linearIndependent_monoidHom (Multiplicative ℕ) L
+  by_contra h₀
+  push_neg at h₀
+  apply linearIndependent_iff'.mp at h
+  let f : Fin n ↪ Multiplicative ℕ →* L :=
+    ⟨fun (i : Fin n) ↦ ⟨⟨fun e ↦ (α i) ^ (Multiplicative.toAdd e), by
+      simp only [toAdd_one, pow_zero]⟩, by
+        simp only [toAdd_mul, Multiplicative.forall, toAdd_ofAdd]
+        intro a b
+        exact pow_add (α i) a b⟩, by
+    intro a b heq
+    simp only [MonoidHom.mk.injEq, OneHom.mk.injEq] at heq
+    have : ∀ e : Multiplicative ℕ, α a ^ Multiplicative.toAdd e = α b ^ Multiplicative.toAdd e :=
+      fun e => congrFun heq (Multiplicative.toAdd e)
+    let heq' := this (Multiplicative.ofAdd 1)
+    have aeqbrest : α a = α b := by
+      have this1 :  α a ^ (Multiplicative.toAdd (Multiplicative.ofAdd 1)) = α a := by
+        change α a ^ 1 = α a
+        exact pow_one (α a)
+      have this2 : α b ^ (Multiplicative.toAdd (Multiplicative.ofAdd 1)) = α b := by
+        change α b ^ 1 = α b
+        exact pow_one (α b)
+      rw [this1, this2] at heq'
+      exact heq'
+    by_contra aneb ; push_neg at aneb
+    let concl := hne a b
+    apply concl at aneb ; apply aneb at aeqbrest
+    exact aeqbrest⟩
+  let s : Finset ((Multiplicative ℕ) →* L) := Finset.map f Finset.univ
+  have h' : ∑ i ∈ s, 1 • ⇑i = 0 := by
+    ext e
+    have h₀ := h₀ (Multiplicative.toAdd e)
+    simp only [one_smul, Pi.zero_apply]
+    simp only [Finset.sum_apply]
+    let ϕ : (i : Fin n) → (i ∈ Finset.univ) → (Multiplicative ℕ →* L) := fun i ↦ (fun _ ↦ f i)
+    have hϕ : ∀ (i : Fin n) (hi : i ∈ Finset.univ), ϕ i hi ∈ s :=
+      fun ⟨i, hi⟩ ↦ ((Finset.mem_map' f).mpr)
+    have hϕ_inj : ∀ (i : Fin n) (hi : i ∈ Finset.univ) (j : Fin n)
+        (hj : j ∈ Finset.univ),ϕ i hi = ϕ j hj → i = j := by
+      intro i hi j hj hij
+      simp only [EmbeddingLike.apply_eq_iff_eq, ϕ] at hij
+      exact hij
+    have hϕ_surj : ∀ x ∈ s, ∃ (i : Fin n) (hi : i ∈ Finset.univ), ϕ i hi = x := by
+      intro x hx
+      simp only [Finset.mem_univ, exists_const, ϕ]
+      have hi := Finset.mem_map.mp hx
+      rcases hi with ⟨i, ⟨_, _⟩⟩
+      use i
+    let f₁ : Fin n → L := fun i ↦ α i ^ Multiplicative.toAdd e
+    let f₂ : (Multiplicative ℕ →* L) → L := fun x ↦ x e
+    have hϕ₀ : ∀ (i : Fin n) (hi : i ∈ Finset.univ), f₁ i = f₂ (ϕ i hi) := by
+      intro i hi
+      simp only [f₁, f₂, ϕ]
+      exact rfl
+    have := Finset.sum_bij ϕ hϕ hϕ_inj hϕ_surj hϕ₀
+    simp only [f₁, f₂] at this
+    rw [← h₀]
+    symm
+    exact this
+  have h := h s (fun _ ↦ 1)
+  simp only [one_smul] at h'
+  simp only [one_smul, one_ne_zero, imp_false] at h
+  apply h at h'
+  have hs := Finset.eq_empty_of_forall_not_mem h'
+  have := Fin.pos_iff_nonempty.mp hn₀
+  have hi : ∃ _ : Fin n, true := (exists_const (Fin n)).mpr rfl
+  rcases hi with ⟨i, _⟩
+  have h₁' : f i ∈ s := by simp only [Finset.mem_map', Finset.mem_univ, s]
+  rw [hs] at h₁'
+  tauto
+
 theorem le_of_span_le_span [Nontrivial R] {s t u : Set M} (hl : LinearIndependent R ((↑) : u → M))
     (hsu : s ⊆ u) (htu : t ⊆ u) (hst : span R s ≤ span R t) : s ⊆ t := by
   have :=

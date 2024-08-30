@@ -9,6 +9,7 @@ variable {k : Type*} [Field k] (p q : Polynomial k)
 
 /-- If `k` is any field, we say that two polynomails in `k[x]` are relatively prime
   if they generate the unit ideal in `k[x]` -/
+/- [Stacks: Lemma 09GX, first part](https://stacks.math.columbia.edu/tag/09GX) -/
 def poly_is_relprime : Prop :=
   IsUnit (Ideal.span {p, q})
 

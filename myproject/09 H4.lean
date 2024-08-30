@@ -13,10 +13,9 @@ variable {F : Type*} [Field F] (p : ℕ)(P : Polynomial F)(hp : 0 < p )
 noncomputable def myfun : (P.comp (X ^ p)).rootSet (AlgebraicClosure F) → P.rootSet (AlgebraicClosure F) :=
   fun x => ⟨x ^ p, by
   obtain ⟨h1, h2⟩ := Polynomial.mem_rootSet.1 x.2
-  rw [Polynomial.mem_rootSet]
-  constructor
-  · exact (expand_ne_zero hp).1 h1
-  · simp_all only [aeval_comp, aeval_X_pow, aeval_X] ⟩
+  apply (mem_rootSet_of_ne ?hp).2
+  · simp_all only [aeval_comp, aeval_X_pow, aeval_X]
+  · exact (expand_ne_zero hp).1 h1 ⟩
 
 /-- Let `F` be a field. Let `p > 0` be the characteristic of `F`. Let `P` be a polynomial over `F`.
 Then the set of roots of `P` and `P(xᵖ)` in the algebraic closure of `F` have the same cardinality (not counting multiplicity).-/

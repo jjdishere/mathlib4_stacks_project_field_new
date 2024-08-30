@@ -420,8 +420,8 @@ instance {p : ℕ} [CharP k p] : CharP (AlgebraicClosure k) p :=
 Then the set of roots of `P` and `P(xᵖ)` in the algebraic closure of `F` have the same cardinality
 (not counting multiplicity).
 [Stacks: Lemma 09H4, first part](https://stacks.math.columbia.edu/tag/09H4) -/
-theorem rootSet_expand_card_eq {F : Type*} [Field F] (p : ℕ)(P : Polynomial F)(p_pos : 0 < p )
-[CharP F p] [Fact (Nat.Prime p)]:
+theorem rootSet_expand_card_eq {F : Type*} [Field F] (p : ℕ) (P : Polynomial F) (p_pos : 0 < p )
+[CharP F p]:
  Fintype.card (P.rootSet (AlgebraicClosure F)) =
  Fintype.card ((P.comp (X ^ p)).rootSet (AlgebraicClosure F)) := by
  symm ; apply Fintype.card_congr
@@ -432,9 +432,11 @@ theorem rootSet_expand_card_eq {F : Type*} [Field F] (p : ℕ)(P : Polynomial F)
   · exact (expand_ne_zero p_pos).1 h1 ⟩
  constructor
  · intro x y hxy
-   simp [Subtype.mk.injEq] at hxy
+   simp only [Subtype.mk.injEq] at hxy
    apply SetCoe.ext
-   replace hxy : (x.1 - y.1) ^ p = 0 := by simp only [sub_pow_char, hxy, sub_self]
+   replace hxy : (x.1 - y.1) ^ p = 0 := by 
+    haveI : Fact (Nat.Prime p) := ⟨char_prime_of_ne_zero F (ne_of_gt p_pos)⟩ 
+    simp only [sub_pow_char, hxy, sub_self]
    exact sub_eq_zero.1 (pow_eq_zero hxy)
  · intro h
    obtain ⟨h1, h2⟩ := Polynomial.mem_rootSet.1 h.2

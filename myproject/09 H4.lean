@@ -15,10 +15,8 @@ noncomputable def myfun : (P.comp (X ^ p)).rootSet (AlgebraicClosure F) → P.ro
   obtain ⟨h1, h2⟩ := Polynomial.mem_rootSet.1 x.2
   rw [Polynomial.mem_rootSet]
   constructor
-  · rw [← expand_eq_comp_X_pow] at h1
-    exact (expand_ne_zero hp).1 h1
-  · simp only [aeval_comp, aeval_X_pow, aeval_X] at h2
-    exact h2 ⟩
+  · exact (expand_ne_zero hp).1 h1
+  · simp_all only [aeval_comp, aeval_X_pow, aeval_X] ⟩
 
 /-- Let `F` be a field. Let `p > 0` be the characteristic of `F`. Let `P` be a polynomial over `F`.
 Then the set of roots of `P` and `P(xᵖ)` in the algebraic closure of `F` have the same cardinality (not counting multiplicity).-/
@@ -40,7 +38,6 @@ theorem rootSet_card_eq (hp : 0 < p )[CharP F p] [Fact (Nat.Prime p)]:
    have : (a ∈ (P.comp (X ^ p)).rootSet (AlgebraicClosure F)) := by
        apply (mem_rootSet_of_ne ?hp).2
        · simpa only [aeval_comp, aeval_X_pow, aeval_X, ha]
-       · rw [← expand_eq_comp_X_pow]
-         exact (expand_ne_zero hp).2 h1
+       · exact (expand_ne_zero hp).2 h1
    use this
    simp_all only [ne_eq, Subtype.coe_eta]

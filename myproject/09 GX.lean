@@ -5,11 +5,10 @@ import Mathlib.RingTheory.Ideal.Basic
 import Mathlib.RingTheory.Ideal.Operations
 open Ideal
 variable {k : Type*} [Field k] (p q : Polynomial k)
--- Here is the definition 11.1 (09 GX)
+
 
 /-- If `k` is any field, we say that two polynomails in `k[x]` are relatively prime
-  if they generate the unit ideal in `k[x]` -/
-/- [Stacks: Lemma 09GX, first part](https://stacks.math.columbia.edu/tag/09GX) -/
+  if they generate the unit ideal in `k[x]`.[Stacks: Definition 09GX, first part](https://stacks.math.columbia.edu/tag/09GX) -/
 def poly_is_relprime : Prop :=
   IsUnit (Ideal.span {p, q})
 

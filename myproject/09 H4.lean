@@ -8,7 +8,7 @@ open Polynomial
 variable {F : Type*} [Field F] (p : ℕ)(P : Polynomial F)(hp : 0 < p )
 
 
--- Here is the lemma 12.5
+
 
 noncomputable def myfun : (P.comp (X ^ p)).rootSet (AlgebraicClosure F) → P.rootSet (AlgebraicClosure F) :=
   fun x => ⟨x ^ p, by
@@ -18,8 +18,7 @@ noncomputable def myfun : (P.comp (X ^ p)).rootSet (AlgebraicClosure F) → P.ro
   · exact (expand_ne_zero hp).1 h1 ⟩
 
 /-- Let `F` be a field. Let `p > 0` be the characteristic of `F`. Let `P` be a polynomial over `F`.
-Then the set of roots of `P` and `P(xᵖ)` in the algebraic closure of `F` have the same cardinality (not counting multiplicity).-/
-/- [Stacks: Lemma 09H4, first part](https://stacks.math.columbia.edu/tag/09H4) -/
+Then the set of roots of `P` and `P(xᵖ)` in the algebraic closure of `F` have the same cardinality (not counting multiplicity). [Stacks: Lemma 09H4, first part](https://stacks.math.columbia.edu/tag/09H4)-/
 theorem rootSet_card_eq (hp : 0 < p )[CharP F p] [Fact (Nat.Prime p)]:
  Fintype.card (P.rootSet (AlgebraicClosure F)) =  Fintype.card ((P.comp (X ^ p)).rootSet (AlgebraicClosure F)) := by
  symm ; apply Fintype.card_congr

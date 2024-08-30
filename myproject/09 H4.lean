@@ -21,7 +21,7 @@ noncomputable def myfun : (P.comp (X ^ p)).rootSet (AlgebraicClosure F) → P.ro
     exact h2 ⟩
 
 /-- Let `F` be a field. Let `p > 0` be the characteristic of `F`. Let `P` be a polynomial over `F`.
-Then the set of roots of `P` and `P(xᵖ)` in the algebraic closure of `F` have the same cardinality (not counting ).-/
+Then the set of roots of `P` and `P(xᵖ)` in the algebraic closure of `F` have the same cardinality (not counting multiplicity).-/
 theorem rootSet_card_eq (hp : 0 < p )[CharP F p] [Fact (Nat.Prime p)]:
  Fintype.card (P.rootSet (AlgebraicClosure F)) =  Fintype.card ((P.comp (X ^ p)).rootSet (AlgebraicClosure F)) := by
  symm ; apply Fintype.card_congr

@@ -1009,7 +1009,7 @@ If α is not algebraic, then there is algebraic isomorphic between F⟮α⟯ and
 
 [Stacks: Lemma 09G1 Part 1](https://stacks.math.columbia.edu/tag/09G1)
 -/
-noncomputable def RatFuncEquivAdjoin (h: ¬ IsAlgebraic F α) :
+noncomputable def ratFuncEquivAdjoin (h: ¬ IsAlgebraic F α) :
     RatFunc F ≃ₐ[F] F⟮α⟯ :=
   let tmp : F[X] →ₐ[F] F⟮α⟯ := aevalTower
     ⟨algebraMap F F⟮α⟯, fun _ => rfl⟩ (AdjoinSimple.gen F α)

@@ -205,7 +205,9 @@ protected noncomputable abbrev field (I : Ideal R) [hI : I.IsMaximal] : Field (R
   qsmul := _
   qsmul_def := fun q x => rfl
 
-/-- If the quotient by an ideal is a field, then the ideal is maximal. -/
+/-- If the quotient by an ideal is a field, then the ideal is maximal. 
+
+[Stacks: Lemma 09FF](https://stacks.math.columbia.edu/tag/09FF)-/
 theorem maximal_of_isField (I : Ideal R) (hqf : IsField (R ⧸ I)) : I.IsMaximal := by
   apply Ideal.isMaximal_iff.2
   constructor

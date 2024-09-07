@@ -1,8 +1,7 @@
 /-
-Copyright (c) 2024 **ALL YOUR NAMES**Wanyi He, Filippo A. E. Nuccio, Huanyu Zheng, Weichen Jiao,
- Yi Yuan. All rights reserved.
+Copyright (c) 2024 **ALL YOUR NAMES**Wanyi He, Filippo A. E. Nuccio, Huanyu Zheng. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: **ALL YOUR NAMES** Wanyi He, Filippo A. E. Nuccio, Huanyu Zheng, Weichen Jiao, Yi Yuan
+Authors: **ALL YOUR NAMES** Wanyi He, Filippo A. E. Nuccio, Huanyu Zheng
 -/
 import Mathlib.RingTheory.Algebraic
 import Mathlib.FieldTheory.Separable

@@ -1,7 +1,8 @@
 /-
-Copyright (c) 2024 **ALL YOUR NAMES**Wanyi He, Filippo A. E. Nuccio, Huanyu Zheng , Yi Yuan. All rights reserved.
+Copyright (c) 2024 **ALL YOUR NAMES**Wanyi He, Filippo A. E. Nuccio, Huanyu Zheng, Weichen Jiao,
+ Yi Yuan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: **ALL YOUR NAMES** Wanyi He, Filippo A. E. Nuccio, Huanyu Zheng, Yi Yuan
+Authors: **ALL YOUR NAMES** Wanyi He, Filippo A. E. Nuccio, Huanyu Zheng, Weichen Jiao, Yi Yuan
 -/
 import Mathlib.RingTheory.Algebraic
 import Mathlib.FieldTheory.Separable
@@ -38,6 +39,9 @@ lemma conj_nonComm_Algebra {D : Type*} [DivisionRing D] (s : ℕ) (a d : D) (ha 
     a⁻¹ * d ^ s * a = (a⁻¹ * d * a) ^ s := by
   let u : Dˣ := ⟨a, a⁻¹, mul_inv_cancel₀ ha, inv_mul_cancel₀ ha⟩
   exact (Units.conj_pow' u d s).symm
+  /-
+  **Remark : It is a beautiful proof that it will simplify the code from induction**
+  -/
 
 namespace JacobsonNoether
 
@@ -152,7 +156,14 @@ theorem JacobsonNoether_charZero [CharP D 0] (h : k ≠ (⊤ : Subring D)) :
     ∃ x : D, x ∉ k ∧ IsSeparable k x := by
   let _ : CharZero k := (CharP.charP_zero_iff_charZero k).mp (by infer_instance)
   obtain ⟨a, ha⟩ := not_forall.mp <| mt (Subring.eq_top_iff' k).mpr h
-  exact ⟨a, ⟨ha, (minpoly.irreducible (Algebra.IsIntegral.isIntegral a)).separable⟩⟩
+  -- #check (Subring.eq_top_iff' k).mpr
+  -- #check mt (Subring.eq_top_iff' k).mpr
+  -- obtain ⟨a, ha⟩ := not_forall.mp (mt (Subring.eq_top_iff' k).mpr h)
+  /-
+  **Notes : "A <| B" = "A (B)" which can simplify the code**
+  **Notes : "mt A" = "the modus tollens of A" (逆否命题，ie "mt (A → B) = (¬B → ¬A)**
+  -/
+  exact ⟨a, ⟨ha, (minpoly.irreducible <| Algebra.IsIntegral.isIntegral a).separable⟩⟩
 
 /-- Jacobson-Noether theorem in the `CharP D p` case -/
 theorem JacobsonNoether_charP (p : ℕ) [Fact p.Prime] [CharP D p]
@@ -163,12 +174,22 @@ theorem JacobsonNoether_charP (p : ℕ) [Fact p.Prime] [CharP D p]
   -- The element `a` below is in `D` but not in `k`.
   obtain ⟨a, ha⟩ := not_forall.mp <| mt (Subring.eq_top_iff' k).mpr h
   have ha₀ : a ≠ 0 := fun nh ↦ nh ▸ ha <| Subring.zero_mem k
+  /-
+  **Notes : "exact A ▸ B" = "rw A at B; exact B" (We use "\t" to type "▸")**
+  -/
   -- We construct another element `b` that does not commute with `a`.
   obtain ⟨b, hb1⟩ : ∃ b : D , (δ a) b ≠ 0 := by
     rw [Subring.mem_center_iff, not_forall] at ha
     use ha.choose
     show a * ha.choose - ha.choose * a ≠ 0
     simpa only [ne_eq, sub_eq_zero] using Ne.symm ha.choose_spec
+    -- simp only [ne_eq, sub_eq_zero]; apply Ne.symm ha.choose_spec
+    /-
+    **Notes : "simpa only A using B" = "simp only A; apply B"**
+    It is similar to "rwa",where the "a" is for "assumption"
+    -/
+
+
   -- We find a maximum natural number `n` such that `(δ a) ^ n b ≠ 0`.
   obtain ⟨n, hn, hb⟩ : ∃ n > 0, ((δ a) ^ n) b ≠ 0 ∧ ((δ a) ^ (n + 1)) b = 0 := by
     obtain ⟨m, -, hm2⟩ := any_pow_gt_eq_zero p ha hinsep
@@ -177,6 +198,10 @@ theorem JacobsonNoether_charP (p : ℕ) [Fact p.Prime] [CharP D p]
       simp only [hm2 (p^ m + 1) (by linarith), LinearMap.zero_apply]
     refine ⟨Nat.find exist, ⟨(Nat.find_spec exist).1, ?_, (Nat.find_spec exist).2⟩⟩
     set t := (Nat.find exist - 1 : ℕ) with ht
+    -- let t := (Nat.find exist - 1 : ℕ); have ht : t = (Nat.find exist - 1 : ℕ) := rfl
+    /-
+    **Notes : "set x := A with B" = "let x := A; have B : x=A := rfl"**
+    -/
     by_cases choice : 0 < t
     · have := @Nat.find_min (H := exist) _ t ?_
       · rw [not_and, ht, Nat.sub_add_cancel] at this

@@ -2,7 +2,9 @@
 Copyright (c) 2024 **ALL YOUR NAMES**Wanyi He, Filippo A. E. Nuccio, Huanyu Zheng, Yi Yuan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
 Authors: **ALL YOUR NAMES** Wanyi He, Filippo A. E. Nuccio, Huanyu Zheng, Yi Yuan
+Authors: **ALL YOUR NAMES** Filippo A. E. Nuccio
 -/
+
 import Mathlib.RingTheory.Algebraic
 import Mathlib.FieldTheory.Separable
 import Mathlib.Algebra.CharP.Subring
@@ -53,6 +55,9 @@ private def f (a : D) : D →ₗ[k] D := {
   toFun := fun x ↦ a * x
   map_add' := fun x y ↦ LeftDistribClass.left_distrib a x y
   map_smul' := fun m x ↦ by simp only [mul_smul_comm, RingHom.id_apply]
+  map_smul' := by
+    intro m x
+    simp only [Algebra.mul_smul_comm, RingHom.id_apply]
 }
 
 @[simp]
@@ -62,6 +67,9 @@ private def g (a : D) : D →ₗ[k] D := {
   toFun := fun x ↦ x * a
   map_add' := fun x y ↦ RightDistribClass.right_distrib x y a
   map_smul' := fun m x ↦ by simp only [smul_mul_assoc, RingHom.id_apply]
+  map_smul' := by
+    intro m x
+    simp only [Algebra.smul_mul_assoc, RingHom.id_apply]
 }
 
 @[simp]
@@ -71,6 +79,12 @@ private def δ (a : D) : D →ₗ[k] D := {
   toFun := f a - g a
   map_add' := fun x y ↦ by simp only [Pi.sub_apply, map_add, map_add, add_sub_add_comm]
   map_smul' := fun m x ↦ by simp only [Pi.sub_apply, map_smul, RingHom.id_apply, smul_sub]
+  map_add' := by
+    intro x y
+    rw [Pi.sub_apply, map_add, map_add, add_sub_add_comm]; rfl
+  map_smul' := by
+    intro m x
+    simp only [Pi.sub_apply, map_smul, RingHom.id_apply, smul_sub]
 }
 
 @[simp]
@@ -82,7 +96,8 @@ private lemma δ_def' (a : D) : δ a = f a - g a := rfl
 -- *Filippo* Change name
 private lemma comm_fg (a : D) : Commute (f a) (g a) := by
   rw [commute_iff_eq, LinearMap.mk.injEq, AddHom.mk.injEq]
-  exact funext fun x ↦ (mul_assoc a x a).symm
+  funext x
+  dsimp [f, g]; exact (mul_assoc a x a).symm
 
 private lemma f_pow (a : D) (n : ℕ) : ∀ x : D, ((f a) ^ n).1 x = (a ^ n) * x := by
   intro x
@@ -91,8 +106,7 @@ private lemma f_pow (a : D) (n : ℕ) : ∀ x : D, ((f a) ^ n).1 x = (a ^ n) * x
   · simp only [Function.iterate_zero, id_eq, pow_zero, one_mul]
   · simp only [Function.iterate_succ', Function.comp_apply, *]
     rename_i n h
-    rw [pow_succ', mul_assoc]
-    rfl
+    rw [pow_succ', mul_assoc]; rfl
 
 private lemma g_pow (a : D) (n : ℕ) : ∀ x : D, ((g a) ^ n).1 x = x * (a ^ n) := by
   intro x

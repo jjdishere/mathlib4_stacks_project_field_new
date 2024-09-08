@@ -1,8 +1,7 @@
 /-
-Copyright (c) 2024 **ALL YOUR NAMES**Wanyi He, Filippo A. E. Nuccio, Huanyu Zheng, Yi Yuan. All rights reserved.
+Copyright (c) 2024 **ALL YOUR NAMES**Wanyi He, Filippo A. E. Nuccio, Huanyu Zheng. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: **ALL YOUR NAMES** Wanyi He, Filippo A. E. Nuccio, Huanyu Zheng, Yi Yuan
-Authors: **ALL YOUR NAMES** Filippo A. E. Nuccio
+Authors: **ALL YOUR NAMES** Wanyi He, Filippo A. E. Nuccio, Huanyu Zheng
 -/
 
 import Mathlib.RingTheory.Algebraic
@@ -13,7 +12,7 @@ import Mathlib.Algebra.CharP.LinearMaps
 /-!
 # The Jacobson-Noether theorem
 
-This file contains a proof of the Jacobson-Noether theorem and some auxiliary lemmas.
+This file contains a proof of the Jacobson-Noether theorem and some auxiliary lemma.
 Here we discuss different cases of characteristics of
 the noncommutative division algebra `D` with the center `k`.
 
@@ -55,9 +54,6 @@ private def f (a : D) : D →ₗ[k] D := {
   toFun := fun x ↦ a * x
   map_add' := fun x y ↦ LeftDistribClass.left_distrib a x y
   map_smul' := fun m x ↦ by simp only [mul_smul_comm, RingHom.id_apply]
-  map_smul' := by
-    intro m x
-    simp only [Algebra.mul_smul_comm, RingHom.id_apply]
 }
 
 @[simp]
@@ -67,9 +63,6 @@ private def g (a : D) : D →ₗ[k] D := {
   toFun := fun x ↦ x * a
   map_add' := fun x y ↦ RightDistribClass.right_distrib x y a
   map_smul' := fun m x ↦ by simp only [smul_mul_assoc, RingHom.id_apply]
-  map_smul' := by
-    intro m x
-    simp only [Algebra.smul_mul_assoc, RingHom.id_apply]
 }
 
 @[simp]
@@ -79,12 +72,6 @@ private def δ (a : D) : D →ₗ[k] D := {
   toFun := f a - g a
   map_add' := fun x y ↦ by simp only [Pi.sub_apply, map_add, map_add, add_sub_add_comm]
   map_smul' := fun m x ↦ by simp only [Pi.sub_apply, map_smul, RingHom.id_apply, smul_sub]
-  map_add' := by
-    intro x y
-    rw [Pi.sub_apply, map_add, map_add, add_sub_add_comm]; rfl
-  map_smul' := by
-    intro m x
-    simp only [Pi.sub_apply, map_smul, RingHom.id_apply, smul_sub]
 }
 
 @[simp]
@@ -161,6 +148,8 @@ lemma any_pow_gt_eq_zero (p : ℕ) [Fact p.Prime] [CharP D p]
     exact hm.2
   rw [((Nat.sub_eq_iff_eq_add hn).1 rfl), pow_add, inter, mul_zero]
 
+open Classical
+
 /-- Jacobson-Noether theorem in the `CharP D 0` case -/
 theorem JacobsonNoether_charZero [CharP D 0] (h : k ≠ (⊤ : Subring D)) :
     ∃ x : D, x ∉ k ∧ IsSeparable k x := by
@@ -187,7 +176,7 @@ theorem JacobsonNoether_charP (p : ℕ) [Fact p.Prime] [CharP D p]
   obtain ⟨n, hn, hb⟩ : ∃ n > 0, ((δ a) ^ n) b ≠ 0 ∧ ((δ a) ^ (n + 1)) b = 0 := by
     obtain ⟨m, -, hm2⟩ := any_pow_gt_eq_zero p ha hinsep
     have exist : ∃ n > 0, ((δ a) ^ (n + 1)) b = 0 := by
-      refine ⟨p ^ m, ⟨pow_pos (Nat.Prime.pos (@Fact.out _ _)) m, ?_ ⟩⟩
+      refine ⟨ p ^ m, ⟨pow_pos (Nat.Prime.pos (@Fact.out _ _)) m, ?_ ⟩ ⟩
       simp only [hm2 (p^ m + 1) (by linarith), LinearMap.zero_apply]
     refine ⟨Nat.find exist, ⟨(Nat.find_spec exist).1, ?_, (Nat.find_spec exist).2⟩⟩
     set t := (Nat.find exist - 1 : ℕ) with ht
@@ -195,8 +184,13 @@ theorem JacobsonNoether_charP (p : ℕ) [Fact p.Prime] [CharP D p]
     · have := @Nat.find_min (H := exist) _ t ?_
       · rw [not_and, ht, Nat.sub_add_cancel] at this
         · exact this choice
-        · exact le_trans choice (Nat.sub_le (Nat.find exist) 1)
-      · exact Nat.sub_one_lt <| ne_of_gt (Nat.find_spec exist).1
+        · replace choice : 1 ≤ t := Nat.one_le_of_lt choice
+          apply le_trans choice
+          exact Nat.sub_le (Nat.find exist) 1
+      · rw [ht]
+        apply Nat.sub_one_lt
+        apply ne_of_gt
+        exact (Nat.find_spec exist).1
     · rw [not_lt, Nat.le_zero] at choice
       have := Nat.eq_add_of_sub_eq (Nat.find_spec exist).1 ht.symm
       simp only [gt_iff_lt, choice, Nat.succ_eq_add_one, zero_add] at this
@@ -226,11 +220,14 @@ theorem JacobsonNoether_charP (p : ℕ) [Fact p.Prime] [CharP D p]
       show (δ a ^ (n - 1 + 1)) b = (δ a) ((δ a ^ (n - 1)) b) by rw [δ_iterate_succ]]
     simp only [add_tsub_cancel_right, δ_def, f_def, g_def]
   have eq1 : c⁻¹ * a * (δ a)^[n - 1] b - c⁻¹ * (δ a)^[n - 1] b * a = 1 := by
-    simp_rw [mul_assoc, (mul_sub_left_distrib c⁻¹ _ _).symm, c_eq, inv_mul_cancel_of_invertible]
+    calc
+      _ = c⁻¹ * c := by
+        simp_rw [mul_assoc, (mul_sub_left_distrib c⁻¹ _ _).symm, c_eq]
+      _ = _ := by simp only [inv_mul_cancel_of_invertible]
 
   have deq : a * d - d * a = a := by
     calc
-      _ = a * ((c⁻¹ * a * (δ a) ^[n - 1] b) - (c⁻¹ * (δ a) ^[n - 1] b * a)) := by
+      _ = a * ((c⁻¹ * a * (δ a)^[n - 1] b) - (c⁻¹ * (δ a)^[n - 1] b * a)) := by
         simp_rw [hd_def, hc', mul_assoc, ← mul_sub_left_distrib]
       _ = _ := by simp only [eq1, mul_one]
   -- *Filippo* Find a better name!

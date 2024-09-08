@@ -1,7 +1,7 @@
 /-
-Copyright (c) 2024 Wanyi He, Filippo A. E. Nuccio, Huanyu Zheng. All rights reserved.
+Copyright (c) 2024 Wanyi He, Filippo A. E. Nuccio, Huanyu Zheng, Yi Yuan. All rights reserved.
 Released under Apache 2.0 license as described in the file LICENSE.
-Authors: Wanyi He, Filippo A. E. Nuccio, Huanyu Zheng
+Authors: Wanyi He, Filippo A. E. Nuccio, Huanyu Zheng, Yi Yuan
 -/
 import Mathlib.RingTheory.Algebraic
 import Mathlib.FieldTheory.Separable
